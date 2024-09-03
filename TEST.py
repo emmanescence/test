@@ -5,77 +5,20 @@ import streamlit as st
 from datetime import datetime, timedelta
 from matplotlib.patches import FancyBboxPatch
 
-# Lista de tickers de CEDEARs
-tickers = ["CVH.BA",
-"EDLH.BA",
-"EDSH.BA",
-"INAG.BA",
-"VALO.BA",
-"SAMI.BA",
-"REGE.BA",
-"SUPV.BA",
-"MORI.BA",
-"LOMA.BA",
-"SEMI.BA",
-"CGPA2.BA",
-"HAVA.BA",
-"MOLI.BA",
-"PAMP.BA",
-"FIPL.BA",
-"MOLA.BA",
-"CTIO.BA",
-"CEPU.BA",
-"LONG.BA",
-"AGRO.BA",
-"TECO2.BA",
-"COME.BA",
-"METR.BA",
-"MIRG.BA",
-"CRES.BA",
-"BBAR.BA",
-"GGAL.BA",
-"BMA.BA",
-"CECO2.BA",
-"BHIP.BA",
-"TGNO4.BA",
-"CAPX.BA",
-"BPAT.BA",
-"YPFD.BA",
-"TGSU2.BA",
-"AUSO.BA",
-"INVJ.BA",
-"TRAN.BA",
-"FERR.BA",
-"BYMA.BA",
-"DGCE.BA",
-"ALUA.BA",
-"HARG.BA",
-"LEDE.BA",
-"CELU.BA",
-"BOLT.BA",
-"TXAR.BA",
-"IRSA.BA",
-"HSAT.BA",
-"GCDI.BA",
-"DGCU2.BA",
-"DYCA.BA",
-"ROSE.BA",
-"POLL.BA",
-"GARO.BA",
-"CARC.BA",
-"GCLA.BA",
-"RIGO.BA",
-"CADO.BA",
-"GBAN.BA",
-"DOME.BA",
-"PATA.BA",
-"EDN.BA",
-"RICH.BA",
-"OEST.BA",
-"GRIM.BA",
-"INTR.BA",
-]
+# Título de la aplicación
+st.title("Análisis de Retornos YTD de CEDEARs")
 
+# Lista de tickers de CEDEARs
+tickers = ["CVH.BA", "EDLH.BA", "EDSH.BA", "INAG.BA", "VALO.BA", "SAMI.BA", "REGE.BA",
+           "SUPV.BA", "MORI.BA", "LOMA.BA", "SEMI.BA", "CGPA2.BA", "HAVA.BA", "MOLI.BA",
+           "PAMP.BA", "FIPL.BA", "MOLA.BA", "CTIO.BA", "CEPU.BA", "LONG.BA", "AGRO.BA",
+           "TECO2.BA", "COME.BA", "METR.BA", "MIRG.BA", "CRES.BA", "BBAR.BA", "GGAL.BA",
+           "BMA.BA", "CECO2.BA", "BHIP.BA", "TGNO4.BA", "CAPX.BA", "BPAT.BA", "YPFD.BA",
+           "TGSU2.BA", "AUSO.BA", "INVJ.BA", "TRAN.BA", "FERR.BA", "BYMA.BA", "DGCE.BA",
+           "ALUA.BA", "HARG.BA", "LEDE.BA", "CELU.BA", "BOLT.BA", "TXAR.BA", "IRSA.BA",
+           "HSAT.BA", "GCDI.BA", "DGCU2.BA", "DYCA.BA", "ROSE.BA", "POLL.BA", "GARO.BA",
+           "CARC.BA", "GCLA.BA", "RIGO.BA", "CADO.BA", "GBAN.BA", "DOME.BA", "PATA.BA",
+           "EDN.BA", "RICH.BA", "OEST.BA", "GRIM.BA", "INTR.BA"]
 
 # Obtener el último día hábil del año previo
 def get_last_business_day_of_last_year():
@@ -104,7 +47,7 @@ def calculate_year_to_date_returns(tickers):
                 ytd_return = (latest_price - initial_price) / initial_price * 100
                 returns[ticker] = ytd_return
         except Exception as e:
-            print(f"Error con {ticker}: {e}")
+            st.error(f"Error con {ticker}: {e}")
 
     return returns
 
@@ -113,12 +56,12 @@ ytd_returns = calculate_year_to_date_returns(tickers)
 
 # Convertir los resultados a un DataFrame y seleccionar las 10 empresas con mayores variaciones positivas
 df_returns = pd.DataFrame(list(ytd_returns.items()), columns=['Ticker', 'YTD Return'])
-top_10_positive_returns = df_returns[df_returns['YTD Return'] > -30].nlargest(130, 'YTD Return')
+top_10_positive_returns = df_returns[df_returns['YTD Return'] > -30].nlargest(10, 'YTD Return')
 
 # Eliminar la extensión ".BA" de los tickers
 tickers = top_10_positive_returns['Ticker'].str.replace('.BA', '')
 
-#crear el grafico
+# Crear el gráfico
 plt.style.use('dark_background')
 fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -151,4 +94,6 @@ ax.grid(True, axis='y', linestyle='--', alpha=0.5)  # Solo grilla horizontal
 plt.xticks(rotation=90)
 plt.tight_layout()
 
-plt.show()
+# Mostrar el gráfico en Streamlit
+st.pyplot(fig)
+
